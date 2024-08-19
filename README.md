@@ -1,6 +1,9 @@
 Here’s a customized README for your job portal project built with Next.js, ShadCN UI, Clerk, Prisma, MongoDB, and Google AI:
 
 ---
+# Diagram
+
+![job-portal](https://github.com/user-attachments/assets/0a4812e5-210f-4ca4-86e1-220491775c8b)
 
 # Job Portal
 
