@@ -1,24 +1,24 @@
 import React from 'react';
+import Navbar from './_components/Navbar';
+import Sidebar from './_components/Sidebar';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full">
       {/* Header */}
-      <header className="h-16 bg-gray-800 text-white flex items-center justify-between px-4">
-        Header
+      <header className="h-20 md:pl-56 fixed inset-y-0 w-full z-50">
+      <Navbar />
       </header>
 
-      <div className="flex flex-1">
+      <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50 ">
         {/* Sidebar */}
-        <aside className="w-64 bg-gray-200 p-4">
-          Sidebar
-        </aside>
+       <Sidebar/>
+      </div>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 bg-gray-100">
+        <main className='md:pl-56 pt-20 h-full'>
           {children}
         </main>
-      </div>
     </div>
   );
 };
