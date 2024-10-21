@@ -1,5 +1,6 @@
 "use client";
 
+import ImageUpload from "@/components/ImageUpload";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,31 +11,33 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Job } from "@prisma/client";
 import axios from "axios";
-import { Pencil } from "lucide-react";
+import { Divide, ImageIcon, Pencil } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-interface TitleFormProps {
-  initialData: {
-    title: string;
-  };
+interface ImageFormProps {
+  initialData: Job;
   jobId: string;
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  imageUrl: z.string().min(1, { message: "imageUrl is required" }),
 });
 
-const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
+const ImageForm = ({ initialData, jobId }: ImageFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: {
+      imageUrl: initialData?.imageUrl || "",
+    },
   });
   const { isSubmitting, isValid } = form.formState;
 
@@ -54,7 +57,7 @@ const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
   return (
     <div className="mt-6 border bg-neutral-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Job Title
+        Job Cover Image
         <Button onClick={toggleEditing} variant={"ghost"}>
           {isEditing ? (
             <>Cancel</>
@@ -66,23 +69,41 @@ const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
           )}
         </Button>
       </div>
-      {/* Display the title if not editing */}
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
+      {/* Display the imageUrl if not editing */}
+      {!isEditing &&
+        (!initialData.imageUrl ? (
+          <div className="flex items-center justify-center h-60 bg-neutral-200 rounded-md">
+            <ImageIcon className="h-10 w-10 text-neutral-500" />
+          </div>
+        ) : (
+          <div className="relative w-full h-60 aspect-video mt-2">
+            <Image
+              alt="Cover Image"
+              fill
+              className="w-full h-full object-cover"
+              src={initialData?.imageUrl}
+            />
+          </div>
+        ))}
 
       {/* In editing mode, display the input */}
       {isEditing && (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 mt-4"
+          >
             <FormField
               control={form.control}
-              name="title"
+              name="imageUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'Full-stack developer'"
+                    <ImageUpload
+                      value={field.value}
+                      disable={isSubmitting}
+                      onChange={(url) => field.onChange(url)}
+                      onRemove={() => field.onChange("")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -101,4 +122,4 @@ const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
   );
 };
 
-export default TitleForm;
+export default ImageForm;

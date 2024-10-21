@@ -7,6 +7,8 @@ import JobPublishAction from "./_components/JobPublishAction";
 import { Banner } from "@/components/Banner";
 import IconBadge from "@/components/IconBadge";
 import TitleForm from "./_components/TitleForm";
+import CategoryForm from "./_components/CategoryForm";
+import ImageForm from "./_components/ImageForm";
 
 const JobDetailPage = async ({ params }: { params: { jobId: string } }) => {
   // verify the mongodb id
@@ -24,10 +26,15 @@ const JobDetailPage = async ({ params }: { params: { jobId: string } }) => {
       userId,
     },
   });
+  const categories = await db.category.findMany({
+    orderBy: {
+      name: "asc",
+    },
+  });
   if (!job) {
     return redirect("/admin/jobs");
   }
-  const requiredFields = [job.title, job.description, job.imageUrl];
+  const requiredFields = [job.title, job.description, job.imageUrl,job.categoryId];
   const totalField = requiredFields.length;
   const completedField = requiredFields.filter(Boolean).length;
   const completionText = `(${completedField}/${totalField})`;
@@ -81,6 +88,14 @@ const JobDetailPage = async ({ params }: { params: { jobId: string } }) => {
           </div>
           {/* title form */}
           <TitleForm  initialData={job} jobId={job.id} />
+          {/* category form */}
+          <CategoryForm  initialData={job} jobId={job.id} options={categories.map(category => ({
+            label : category.name,
+            value : category.id,
+          }))}/>
+
+          {/* cover image */}
+          <ImageForm initialData={job} jobId={job.id}/>
         </div>
       </div>
     </div>

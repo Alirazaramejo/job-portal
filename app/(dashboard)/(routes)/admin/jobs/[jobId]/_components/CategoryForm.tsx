@@ -8,8 +8,9 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Job } from "@prisma/client";
 import axios from "axios";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,24 +18,31 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
+import { cn } from "@/lib/utils"; // Ensure you import cn utility if you're using classnames
+import { Combobox } from "@/components/ui/combo-box";
 
-interface TitleFormProps {
-  initialData: {
-    title: string;
-  };
+
+interface CategoryFormProps {
+  initialData: Job;
   jobId: string;
+  options: {
+    label: string;
+    value: string;
+  }[];
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
+  categoryId: z.string().min(1, "Category is required"),
 });
 
-const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
+const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: {
+      categoryId: initialData?.categoryId || "",
+    },
   });
   const { isSubmitting, isValid } = form.formState;
 
@@ -51,39 +59,42 @@ const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
 
   const toggleEditing = () => setIsEditing((current) => !current);
 
+  const selectOptions = options.find(
+    (option) => option.value === initialData.categoryId
+  );
+
+
   return (
     <div className="mt-6 border bg-neutral-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Job Title
+        Category
         <Button onClick={toggleEditing} variant={"ghost"}>
-          {isEditing ? (
-            <>Cancel</>
-          ) : (
-            <>
+          {isEditing ? <>Cancel</> : <>
               <Pencil className="w-4 h-4 mr-2" />
               Edit
-            </>
-          )}
+            </>}
         </Button>
       </div>
-      {/* Display the title if not editing */}
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
 
-      {/* In editing mode, display the input */}
+      {/* Display the category if not editing */}
+      {!isEditing && (
+        <p className={cn("text-sm mt-2", !initialData?.categoryId && "text-neutral-500 italic")}>
+          {selectOptions?.label || "No Category"}
+        </p>
+      )}
+
+      {/* In editing mode, display the select input */}
       {isEditing && (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <FormField
               control={form.control}
-              name="title"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      {...field}
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'Full-stack developer'"
-                    />
+                  <Combobox options={options} heading = "categories" {...field}
+                  />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -101,4 +112,4 @@ const TitleForm = ({ initialData, jobId }: TitleFormProps) => {
   );
 };
 
-export default TitleForm;
+export default CategoryForm;
