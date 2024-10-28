@@ -21,26 +21,42 @@ import { z } from "zod";
 import { cn } from "@/lib/utils"; // Ensure you import cn utility if you're using classnames
 import { Combobox } from "@/components/ui/combo-box";
 
-interface CategoryFormProps {
+interface yearsOfExperienceProps {
   initialData: Job;
   jobId: string;
-  options: {
-    label: string;
-    value: string;
-  }[];
+
 }
 
+const options = [
+  {
+    value: "0",
+    label: "Fresher",
+  },
+  {
+    value: "2",
+    label: "0-2 years",
+  },
+  {
+    value: "3",
+    label: "2-4 years",
+  },
+  {
+    value: "5",
+    label: "5+ years",
+  },
+];
+
 const formSchema = z.object({
-  categoryId: z.string().min(1, "Category is required"),
+  yearsOfExperience: z.string().min(1, "yearsOfExperience is required"),
 });
 
-const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
+const WorkExperience = ({ initialData, jobId }: yearsOfExperienceProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      categoryId: initialData?.categoryId || "",
+      yearsOfExperience: initialData?.yearsOfExperience || "",
     },
   });
   const { isSubmitting, isValid } = form.formState;
@@ -59,13 +75,13 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
   const toggleEditing = () => setIsEditing((current) => !current);
 
   const selectedOption = options.find(
-    (option) => option.value === initialData.categoryId
+    (option) => option.value === initialData.yearsOfExperience
   );
 
   return (
     <div className="mt-6 border bg-neutral-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-      Job Category
+      Years Of Experience
         <Button onClick={toggleEditing} variant={"ghost"}>
           {isEditing ? <>Cancel</> : <>
               <Pencil className="w-4 h-4 mr-2" />
@@ -74,10 +90,10 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
         </Button>
       </div>
 
-      {/* Display the category if not editing */}
+      {/* Display the yearsOfExperience if not editing */}
       {!isEditing && (
-        <p className={cn("text-sm mt-2", !initialData?.categoryId && "text-neutral-500 italic")}>
-          {selectedOption?.label || "No Category"}
+        <p className={cn("text-sm mt-2", !initialData?.yearsOfExperience && "text-neutral-500 italic")}>
+          {selectedOption?.label || "No Experience"}
         </p>
       )}
 
@@ -87,7 +103,7 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <FormField
               control={form.control}
-              name="categoryId"
+              name="yearsOfExperience"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -95,7 +111,7 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
                       options={options}
                       value={field.value} // Bind Combobox value to form field value
                       onChange={field.onChange} // Bind Combobox onChange to form field onChange
-                      heading="categories"
+                      heading="Work Mode"
                     />
                   </FormControl>
                   <FormMessage />
@@ -114,4 +130,4 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
   );
 };
 
-export default CategoryForm;
+export default WorkExperience;

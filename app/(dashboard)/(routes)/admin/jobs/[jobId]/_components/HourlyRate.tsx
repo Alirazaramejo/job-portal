@@ -20,27 +20,25 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { cn } from "@/lib/utils"; // Ensure you import cn utility if you're using classnames
 import { Combobox } from "@/components/ui/combo-box";
+import { Input } from "@/components/ui/input";
 
-interface CategoryFormProps {
+interface HourlyRateProps {
   initialData: Job;
   jobId: string;
-  options: {
-    label: string;
-    value: string;
-  }[];
+  
 }
 
 const formSchema = z.object({
-  categoryId: z.string().min(1, "Category is required"),
+  hourlyRate: z.string().min(1, "HourlyRate is required"),
 });
 
-const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
+const HourlyRate = ({ initialData, jobId }: HourlyRateProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      categoryId: initialData?.categoryId || "",
+      hourlyRate: initialData?.hourlyRate || "",
     },
   });
   const { isSubmitting, isValid } = form.formState;
@@ -58,14 +56,12 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
 
   const toggleEditing = () => setIsEditing((current) => !current);
 
-  const selectedOption = options.find(
-    (option) => option.value === initialData.categoryId
-  );
+  
 
   return (
     <div className="mt-6 border bg-neutral-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-      Job Category
+      Job HourlyRate
         <Button onClick={toggleEditing} variant={"ghost"}>
           {isEditing ? <>Cancel</> : <>
               <Pencil className="w-4 h-4 mr-2" />
@@ -74,11 +70,13 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
         </Button>
       </div>
 
-      {/* Display the category if not editing */}
+      {/* Display the HourlyRate if not editing */}
       {!isEditing && (
-        <p className={cn("text-sm mt-2", !initialData?.categoryId && "text-neutral-500 italic")}>
-          {selectedOption?.label || "No Category"}
-        </p>
+       <p className="text-sm mt-2">
+        {
+          initialData.hourlyRate ? `${initialData.hourlyRate}/hrs` : "$ 0/hr"
+        }
+       </p>
       )}
 
       {/* In editing mode, display the select input */}
@@ -87,15 +85,14 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
             <FormField
               control={form.control}
-              name="categoryId"
+              name="hourlyRate"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Combobox
-                      options={options}
-                      value={field.value} // Bind Combobox value to form field value
-                      onChange={field.onChange} // Bind Combobox onChange to form field onChange
-                      heading="categories"
+                    <Input
+                    placeholder="Type the hourly Rate"
+                    disabled={isSubmitting}
+                    {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -114,4 +111,4 @@ const CategoryForm = ({ initialData, jobId, options }: CategoryFormProps) => {
   );
 };
 
-export default CategoryForm;
+export default HourlyRate;
