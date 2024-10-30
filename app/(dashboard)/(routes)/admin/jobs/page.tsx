@@ -44,7 +44,7 @@ const formattedJobs : JobsColumns[] = jobs.map(job=>({
       </div>
       {/* data table list of jobs*/}
       <div className="mt-6">
-        <DataTable columns={columns} data={formattedJobs}/>
+        <DataTable columns={columns} data={formattedJobs} searchKey="title"/>
       </div>
     </div>
   );
