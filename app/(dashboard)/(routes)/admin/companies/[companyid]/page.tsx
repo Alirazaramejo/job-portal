@@ -11,6 +11,8 @@ import DescriptionForm from "./description-form";
 import CompanyLogoForm from "./logo-form";
 import CompanySocialForm from "./social-contact-form";
 import CompanyCoverImageForm from "./cover-image-form";
+import CompanyOverviewForm from "./company-overview";
+import WhyJoinUsForm from "./why-join-us-form";
 
 const CompanyEditPage = async ({
   params,
@@ -109,6 +111,12 @@ const CompanyEditPage = async ({
           <CompanyCoverImageForm initialData={company} companyid={company.id} />
           </div>
           
+        </div>
+        <div className="col-span-2">
+          <CompanyOverviewForm initialData={company} companyid={company.id} />
+        </div>
+        <div className="col-span-2">
+      <WhyJoinUsForm initialData={company} companyid={company.id} />
         </div>
       </div>
     </div>

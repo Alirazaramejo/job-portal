@@ -18,7 +18,9 @@ const jobs = await db.job.findMany({
     userId
   },
   include : {
-    category : true
+    category : true,
+    company : true
+
   },
   orderBy  : {
     createdAt : "desc"
@@ -27,7 +29,7 @@ const jobs = await db.job.findMany({
 const formattedJobs : JobsColumns[] = jobs.map(job=>({
   id : job.id,
   title : job.title,
-  company : "",
+  company : job.company ? job.company?.name : "",
   category : job.category ? job.category?.name : "N/A",
   isPublished : job.isPublished,
   createdAt : job.createdAt ? format(job.createdAt.toLocaleDateString(),"MMM d0, yyyy") : "N/A"
